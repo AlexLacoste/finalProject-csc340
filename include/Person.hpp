@@ -27,6 +27,9 @@ class Person {
     Person *getHead();
     void setHead(Person *newHead);
 
+    Person *getTail();
+    void setTail(Person *newHead);
+
     virtual void displayCourses() const = 0;
 
   protected:
@@ -36,6 +39,7 @@ class Person {
     Person *next;
     Person *prev;
     Person *head;
+    Person *tail;
 };
 
 #endif

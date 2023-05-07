@@ -81,3 +81,13 @@ void Person::setHead(Person *newHead)
 {
     head = newHead;
 }
+
+Person *Person::getTail()
+{
+    return tail;
+}
+
+void Person::setTail(Person *newTail)
+{
+    tail = newTail;
+}

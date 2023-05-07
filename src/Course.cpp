@@ -89,7 +89,7 @@ void Course::displayCourses() const
 {
     Course *temp = head;
     while (temp) {
-        std::cout << "Course ID: " << temp->getID() << ", Course Name: " << temp->getName() << std::endl;
+        std::cout << "Course ID: " << temp->getID() << ", Course Name: " << temp->getName() << ", Course Capacity: " << temp->getCapacity() << std::endl;
         temp = temp->getNext();
     }
 }

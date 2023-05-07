@@ -1,0 +1,11 @@
+Biology 10
+Algebra 15
+History 20
+English 8
+Science 12
+Psychology 10
+Chemistry 15
+Physics 9
+Art 10
+Calculus 12
+Music 13

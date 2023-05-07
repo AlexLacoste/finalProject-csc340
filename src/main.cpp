@@ -1,4 +1,16 @@
+#include <fstream>
+#include <sstream>
+#include "Course.hpp"
+#include "Professor.hpp"
 #include "Student.hpp"
+
+#define STUDENTS_FILE   "school-files/students.txt"
+#define PROFESSORS_FILE "school-files/professors.txt"
+#define COURSES_FILE    "school-files/courses.txt"
+
+#define STUDENTS_FINISHED_FILE   "../school-files/students-finished.txt"
+#define PROFESSORS_FINISHED_FILE "../school-files/professors-finished.txt"
+#define COURSES_FINISHED_FILE    "../school-files/courses-finished.txt"
 
 void displayMenu()
 {
@@ -21,10 +33,126 @@ void displayMenu()
     std::cout << "16. Quit" << std::endl;
 }
 
+std::vector<std::string> getLinesFromFile(std::string fileName)
+{
+    std::vector<std::string> lines;
+    std::ifstream file(fileName);
+    std::string line;
+
+    if (file.is_open()) {
+        while (getline(file, line)) {
+            lines.push_back(line);
+        }
+        file.close();
+    } else {
+        std::cout << "Unable to open file: " << fileName << std::endl;
+    }
+
+    return lines;
+}
+
+Course *getCoursesFromFile(std::string fileName)
+{
+    std::vector<std::string> lines = getLinesFromFile(fileName);
+    Course *courses = nullptr;
+    int id = 0;
+
+    for (auto line : lines) {
+        std::stringstream ss{line};
+        std::string name;
+        std::string capacity;
+        ss >> name;
+        ss >> capacity;
+
+        Course *newCourse = new Course(id, name, stoi(capacity));
+
+        if (courses == nullptr) {
+            courses = newCourse;
+            courses->setHead(courses);
+        } else {
+            if (courses->getTail() == nullptr) {
+                courses->setNext(newCourse);
+                courses->setTail(newCourse);
+            } else {
+                courses->getTail()->setNext(newCourse);
+                courses->setTail(newCourse);
+            }
+        }
+        id++;
+    }
+
+    return courses;
+}
+
+Student *getStudentsFromFile(std::string fileName)
+{
+    std::vector<std::string> lines = getLinesFromFile(fileName);
+    Student *students = nullptr;
+    int id = 0;
+
+    for (auto line : lines) {
+        Student *newStudent = new Student(id, line);
+
+        if (students == nullptr) {
+            students = newStudent;
+            students->setHead(students);
+        } else {
+            if (students->getTail() == nullptr) {
+                newStudent->setPrev(students);
+                students->setNext(newStudent);
+                students->setTail(newStudent);
+            } else {
+                students->getTail()->setNext(newStudent);
+                newStudent->setPrev(students->getTail());
+                students->setTail(newStudent);
+            }
+        }
+        id++;
+    }
+
+    return students;
+}
+
+Professor *getProfessorsFromFile(std::string fileName)
+{
+    std::vector<std::string> lines = getLinesFromFile(fileName);
+    Professor *professors = nullptr;
+    int id = 0;
+
+    for (auto line : lines) {
+        Professor *newProfessor = new Professor(id, line);
+
+        if (professors == nullptr) {
+            professors = newProfessor;
+            professors->setHead(professors);
+        } else {
+            if (professors->getTail() == nullptr) {
+                newProfessor->setPrev(professors);
+                professors->setNext(newProfessor);
+                professors->setTail(newProfessor);
+            } else {
+                professors->getTail()->setNext(newProfessor);
+                newProfessor->setPrev(professors->getTail());
+                professors->setTail(newProfessor);
+            }
+        }
+        id++;
+    }
+
+    return professors;
+}
+
 int main()
 {
-    Student student(0, "John Doe");
+    Course *courses = getCoursesFromFile(COURSES_FILE);
+    Student *students = getStudentsFromFile(STUDENTS_FILE);
+    Professor *professors = getProfessorsFromFile(PROFESSORS_FILE);
 
-    std::cout << "Student name: " << student.getName() << "    Student ID: " << student.getID() << std::endl;
+    if (!courses || !students || !professors) {
+        std::cout << "Error: Unable to load files" << std::endl;
+        return 84;
+    }
+
+    courses->displayCourses();
     return 0;
 }
