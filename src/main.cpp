@@ -13,6 +13,7 @@
 #define COURSES_FINISHED_FILE    "../school-files/courses-finished.txt"
 
 void displayMenu()
+//the display menu will show the user what options they have in the program
 {
     std::cout << "University Management System" << std::endl;
     std::cout << "1. Add a student" << std::endl;
@@ -52,6 +53,7 @@ std::vector<std::string> getLinesFromFile(std::string fileName)
 }
 
 Course *getCoursesFromFile(std::string fileName)
+//this gathers the files needed to run the program
 {
     std::vector<std::string> lines = getLinesFromFile(fileName);
     Course *courses = nullptr;
