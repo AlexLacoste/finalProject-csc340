@@ -13,7 +13,7 @@ class LinkedList {
 
     Node *getHead();
 
-    void remove(Node *,int ID);
+    void remove(int ID);
     void push_back(void *data, int id);
     int getSize();
     Node *find_by_id(int ID);

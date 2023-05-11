@@ -22,8 +22,8 @@ void LinkedList::push_back(void *data, int id) {
     }
 }
 
-void LinkedList::remove(Node *node, int ID) {
-    Node *current = node;
+void LinkedList::remove(int ID) {
+    Node *current = head;
     Node *prev = nullptr;
     while (current) {
         if (current->getID() == ID) {

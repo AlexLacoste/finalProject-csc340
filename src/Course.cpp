@@ -57,10 +57,12 @@ void Course::addStudents(Student *student) {
     if (this->capacity < this->studends->getSize())
         throw std::runtime_error("Class full");
     if (this->getStudents()->find_by_id(student->getId()) != nullptr)
-        throw std::runtime_error("Class full");
+        throw std::runtime_error("Student already in class");
     this->studends->push_back(student, student->getId());
 }
 
 void Course::removeStudents(int studentID) {
-    this->studends->remove(this->studends->getHead(), studentID);
+    if (this->getStudents()->find_by_id(studentID) == nullptr)
+        throw std::runtime_error("Student not found in this class");
+    this->studends->remove(studentID);
 }

@@ -20,11 +20,11 @@ int displayMenu()
 {
     int choice;
     cout << "\nUniversity Management System" << endl;
-    cout << "1. Add a student" << endl;
+    cout << "1. Create a student" << endl;
     cout << "2. Remove a student" << endl;
-    cout << "3. Add a professor" << endl;
+    cout << "3. Create a professor" << endl;
     cout << "4. Remove a professor" << endl;
-    cout << "5. Add a course" << endl;
+    cout << "5. Create a course" << endl;
     cout << "6. Remove a course" << endl;
     cout << "7. Enroll a student in a course" << endl;
     cout << "8. Drop a student from a course" << endl;
@@ -121,59 +121,59 @@ LinkedList *getProfessorsFromFile(string fileName)
     return list;
 }
 
-void displayCourseStudent(Course *course) {
-    Node *current = course->getStudents()->getHead();
-    while (current) {
-        cout << current->getID() << ": " << static_cast<Student*>(current->getData())->getName() << '\n';
-        current = current->getNext();
-    }
-}
-
-void displayDetailsCourses(Course *course) {
-    cout << course->getName() << '\n';
-    cout << course->getDescription() << ' ';
-    cout << "Capacity: " << ((course->getStudents() == nullptr) ? 0 : course->getStudents()->getSize()) << "/" << course->getCapacity() << '\n';
-    displayCourseStudent(course);
-}
-
-void displayListDetailsCourses(LinkedList *&courses) {
-    Node *current = courses->getHead();
-    while (current) {
-        Course *course = static_cast<Course*>(current->getData());
-        cout << current->getID() << ": " << course->getName() << '\n';
-        cout << course->getDescription() << ' ';
-        cout << "Capacity: " << ((course->getStudents() == nullptr) ? 0 : course->getStudents()->getSize()) << "/" << course->getCapacity() << '\n';
-        displayCourseStudent(course);
-        current = current->getNext();
-    }
-    cout << endl;
-}
-
-void displayListCourses(LinkedList *&courses) {
-    Node *current = courses->getHead();
-    while (current) {
-        Course *course = static_cast<Course*>(current->getData());
-        cout << current->getID() << ": " << course->getName() << '\n';
-        cout << "Capacity: " << ((course->getStudents() == nullptr) ? 0 : course->getStudents()->getSize()) << "/" << course->getCapacity() << '\n';
-        current = current->getNext();
-    }
-    cout << endl;
-}
-
-void displayStudents(LinkedList *&students) {
+void displayStudents(LinkedList *students)
+{
     Node *current = students->getHead();
     while (current) {
-        cout << current->getID() << ": " << static_cast<Student*>(current->getData())->getName() << '\n';
+        cout << current->getID() << ": " << static_cast<Student *>(current->getData())->getName() << '\n';
         current = current->getNext();
     }
     cout << endl;
 }
 
-Student *displayAndGetStudent(LinkedList *&students) {
+void displayDetailsCourses(Course *course)
+{
+    cout << course->getName() << '\n';
+    cout << course->getDescription() << ' ';
+    cout << "Capacity: " << ((course->getStudents() == nullptr) ? 0 : course->getStudents()->getSize()) << "/"
+         << course->getCapacity() << '\n';
+    displayStudents(course->getStudents());
+}
+
+void displayListDetailsCourses(LinkedList *&courses)
+{
+    Node *current = courses->getHead();
+    while (current) {
+        Course *course = static_cast<Course *>(current->getData());
+        cout << current->getID() << ": " << course->getName() << '\n';
+        cout << course->getDescription() << ' ';
+        cout << "Capacity: " << ((course->getStudents() == nullptr) ? 0 : course->getStudents()->getSize()) << "/"
+             << course->getCapacity() << '\n';
+        displayStudents(course->getStudents());
+        current = current->getNext();
+    }
+    cout << endl;
+}
+
+void displayListCourses(LinkedList *&courses)
+{
+    Node *current = courses->getHead();
+    while (current) {
+        Course *course = static_cast<Course *>(current->getData());
+        cout << current->getID() << ": " << course->getName() << '\n';
+        cout << "Capacity: " << ((course->getStudents() == nullptr) ? 0 : course->getStudents()->getSize()) << "/"
+             << course->getCapacity() << '\n';
+        current = current->getNext();
+    }
+    cout << endl;
+}
+
+Student *displayAndGetStudent(LinkedList *students)
+{
     int studentId = 0;
     cout << endl;
     displayStudents(students);
-    cout << "Student to add: ";
+    cout << "Student to select: ";
     cin >> studentId;
     Node *node = students->find_by_id(studentId);
     if (node == NULL) {
@@ -183,11 +183,15 @@ Student *displayAndGetStudent(LinkedList *&students) {
     return static_cast<Student *>(node->getData());
 }
 
-Course *displayAndGetCourse(LinkedList *&courses) {
+Course *displayAndGetCourse(LinkedList *courses)
+{
     int courseId = 0;
+    if (courses->getSize() == 0) {
+        throw std::runtime_error("There is no course available");
+    }
     cout << endl;
     displayListCourses(courses);
-    cout << "Course to add the student: ";
+    cout << "Course to select: ";
     cin >> courseId;
     Node *node = courses->find_by_id(courseId);
 
@@ -198,20 +202,121 @@ Course *displayAndGetCourse(LinkedList *&courses) {
     return static_cast<Course *>(node->getData());
 }
 
-void addStudent(LinkedList *&courses, LinkedList *&students) {
-    Student* student = displayAndGetStudent(students);
+LinkedList *getCoursesNoEmpty(LinkedList *&courses)
+{
+    LinkedList *fillCourse = new LinkedList();
+    Node *current = courses->getHead();
 
-    while(1) {
+    while (current) {
+        if (static_cast<Course *>(current->getData())->getStudents()->getSize() != 0)
+            fillCourse->push_back(current->getData(), current->getID());
+        current = current->getNext();
+    }
+    return fillCourse;
+}
+
+LinkedList *getCoursesNoFull(LinkedList *&courses)
+{
+    LinkedList *fillCourse = new LinkedList();
+    Node *current = courses->getHead();
+
+    while (current) {
+        if (static_cast<Course *>(current->getData())->getStudents()->getSize()
+            < static_cast<Course *>(current->getData())->getCapacity())
+            fillCourse->push_back(current->getData(), current->getID());
+        current = current->getNext();
+    }
+    return fillCourse;
+}
+
+void addStudent(LinkedList *&courses, LinkedList *&students)
+{
+    Course *course = nullptr;
+    try {
+        course = displayAndGetCourse(getCoursesNoFull(courses));
+    } catch (const std::exception &e) {
+        cout << e.what() << std::endl;
+        if (std::string(e.what()).compare("There is no course available") == 0) {
+            return;
+        }
+    }
+
+    while (1) {
         try {
-            Course* course = displayAndGetCourse(courses);
+            Student *student = displayAndGetStudent(students);
             course->addStudents(student);
             cout << "Student added successfully\n";
             displayDetailsCourses(course);
             break;
-        } catch (const std::exception& e) {
+        } catch (const std::exception &e) {
+            cout << e.what() << std::endl;
+            break;
+        }
+    }
+    cout << "-----------------------------\n";
+}
+
+void removeStudent(LinkedList *&courses, LinkedList *&students)
+{
+    Course *course = nullptr;
+    try {
+        course = displayAndGetCourse(getCoursesNoEmpty(courses));
+    } catch (const std::exception &e) {
+        cout << e.what() << std::endl;
+        if (std::string(e.what()).compare("There is no course available") == 0) {
+            return;
+        }
+    }
+
+    while (1) {
+        try {
+            Student *student = displayAndGetStudent(course->getStudents());
+            course->removeStudents(student->getId());
+            cout << "Student remove successfully\n";
+            displayDetailsCourses(course);
+            break;
+        } catch (const std::exception &e) {
             cout << e.what() << std::endl;
         }
     }
+    cout << "-----------------------------\n";
+}
+
+Student *getStudentsByName(LinkedList *&students, std::string name) {
+    Node *c = students->getHead();
+    while(c) {
+        if (static_cast<Student*>(c->getData())->getName().compare(name) == 0)
+            return static_cast<Student*>(c->getData());
+        c = c->getNext();
+    }
+    return nullptr;
+}
+
+void createStudent(LinkedList *&students)
+{
+    std::string studentName = "";
+    cout << endl;
+    while (true) {
+        cin.ignore(); // discard any remaining characters in the input buffer
+        cout << "Student name(firstName, lastName): ";
+        getline(std::cin, studentName);
+        vector<string> splitLine = splitString(studentName, ' ');
+        if (splitLine.size() != 2) {
+            cout << "Invalid student name";
+        } else if (getStudentsByName(students, studentName) == nullptr)
+            break;
+    }
+    Student *n = new Student(students->getSize() + 1, studentName);
+    students->push_back(n, n->getId());
+    cout << "Student created successfully\n";
+    cout << "-----------------------------\n";
+}
+
+void removeStudent(LinkedList *&students)
+{
+    Student *n = displayAndGetStudent(students);
+    students->remove(n->getId());
+    cout << "Student remove successfully\n";
     cout << "-----------------------------\n";
 }
 
@@ -229,22 +334,18 @@ int main()
     while (choice != 16) {
         switch (choice) {
             case 1:
-                addStudent(courses, students);
+                createStudent(students);
                 break;
             case 2:
-                break;
-            case 3:
-                break;
-            case 4:
-                break;
-            case 5:
-                break;
-            case 6:
+                removeStudent(students);
                 break;
             case 7:
-                cout << "Coming soon!" << endl;
+                addStudent(courses, students);
                 break;
             case 8:
+                removeStudent(courses, students);
+                break;
+            case 9:
                 cout << "Coming soon!" << endl;
                 break;
             default:
