@@ -1,115 +1,68 @@
 #include "Course.hpp"
 #include <iostream>
 
-Course::Course(int ID, const std::string &name, int capacity)
-    : ID(ID), name(name), capacity(capacity), next(nullptr), tail(nullptr)
-{
-}
+Course::Course(int id, const std::string &name, int capacity, const std::string &description)
+        : id(id), name(name), capacity(capacity), description(description), professor(nullptr), studends(new LinkedList()) {}
 
-int Course::getID() const
-{
-    return ID;
-}
-const std::string &Course::getName() const
-{
+
+const std::string &Course::getName() const {
     return name;
 }
-int Course::getCapacity() const
-{
+
+const std::string &Course::getDescription() const {
+    return description;
+}
+
+int Course::getCapacity() const {
     return capacity;
 }
 
-void Course::setID(int ID)
-{
-    this->ID = ID;
+int Course::getId() const {
+    return id;
 }
-void Course::setName(const std::string &name)
-{
+
+Professor *Course::getProfessor() const {
+    return professor;
+}
+
+LinkedList *Course::getStudents() const {
+    return studends;
+}
+
+void Course::setName(const std::string &name) {
     this->name = name;
 }
-void Course::setCapacity(int capacity)
-{
+
+void Course::setProfessor(Professor *professor) {
+    this->professor = professor;
+}
+
+void Course::setStudents(LinkedList *studends) {
+    this->studends = studends;
+}
+
+void Course::setDescription(const std::string &description) {
+    this->description = description;
+}
+
+void Course::setCapacity(int capacity) {
     this->capacity = capacity;
 }
 
-Course *Course::getNext() const
-{
-    return next;
-}
-void Course::setNext(Course *next)
-{
-    this->next = next;
+void Course::setId(int id) {
+    this->id = id;
 }
 
-void Course::remove(int ID)
-{
-    Course *current = head;
-    Course *prev = nullptr;
-    while (current) {
-        if (current->getID() == ID) {
-            if (prev) {
-                prev->setNext(current->getNext());
-            } else {
-                head = current->getNext();
-            }
-            if (current == tail) {
-                tail = prev;
-            }
-            delete current;
-            return;
-        }
-        prev = current;
-        current = current->getNext();
-    }
+void Course::addStudents(Student *student) {
+    if (this->capacity < this->studends->getSize())
+        throw std::runtime_error("Class full");
+    if (this->getStudents()->find_by_id(student->getId()) != nullptr)
+        throw std::runtime_error("Student already in class");
+    this->studends->push_back(student, student->getId());
 }
 
-Course *Course::find(int ID)
-{
-    Course *current = head;
-    while (current) {
-        if (current->getID() == ID) {
-            return current;
-        }
-        current = current->getNext();
-    }
-    return nullptr;
-}
-
-Course *Course::getHead()
-{
-    return head;
-}
-
-void Course::setHead(Course *newHead)
-{
-    head = newHead;
-}
-
-void Course::displayCourses() const
-{
-    Course *temp = head;
-    while (temp) {
-        std::cout << "Course ID: " << temp->getID() << ", Course Name: " << temp->getName() << ", Course Capacity: " << temp->getCapacity() << std::endl;
-        temp = temp->getNext();
-    }
-}
-
-Course *Course::getTail()
-{
-    return tail;
-}
-void Course::setTail(Course *newTail)
-{
-    tail = newTail;
-}
-
-void Course::add(Course *course)
-{
-    if (!head) {
-        head = course;
-        tail = course;
-        return;
-    }
-    tail->setNext(course);
-    tail = course;
+void Course::removeStudents(int studentID) {
+    if (this->getStudents()->find_by_id(studentID) == nullptr)
+        throw std::runtime_error("Student not found in this class");
+    this->studends->remove(studentID);
 }

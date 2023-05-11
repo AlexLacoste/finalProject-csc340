@@ -4,42 +4,26 @@
 #include <iostream>
 #include <string>
 
+enum PersonType {
+    STUDENT,
+    PROFESSOR
+};
+
 class Person {
   public:
-    Person(int ID, const std::string &name);
+    Person(int id, const std::string &name);
     virtual ~Person() noexcept = default;
 
-    int getID() const;
     const std::string &getName() const;
-
-    void setID(int ID);
+    int getId() const;
     void setName(const std::string &name);
+    void setId(int id);
 
-    Person *getNext() const;
-    Person *getPrev() const;
-
-    void setNext(Person *next);
-    void setPrev(Person *prev);
-
-    void remove(int ID);
-    Person *find(int ID);
-
-    Person *getHead();
-    void setHead(Person *newHead);
-
-    Person *getTail();
-    void setTail(Person *newHead);
-
-    virtual void displayCourses() const = 0;
+    virtual PersonType getPersonType() const = 0;  // pure virtual function
 
   protected:
-  private:
-    int ID;
     std::string name;
-    Person *next;
-    Person *prev;
-    Person *head;
-    Person *tail;
+    int id;
 };
 
 #endif
