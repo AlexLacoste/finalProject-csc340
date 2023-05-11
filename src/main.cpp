@@ -1,8 +1,12 @@
 #include <fstream>
+#include <iostream>
 #include <sstream>
 #include "Course.hpp"
+#include "LinkedList.hpp"
 #include "Professor.hpp"
 #include "Student.hpp"
+
+using namespace std;
 
 #define STUDENTS_FILE   "school-files/students.txt"
 #define PROFESSORS_FILE "school-files/professors.txt"
@@ -12,33 +16,36 @@
 #define PROFESSORS_FINISHED_FILE "../school-files/professors-finished.txt"
 #define COURSES_FINISHED_FILE    "../school-files/courses-finished.txt"
 
-void displayMenu()
-//the display menu will show the user what options they have in the program
+int displayMenu()
 {
-    std::cout << "University Management System" << std::endl;
-    std::cout << "1. Add a student" << std::endl;
-    std::cout << "2. Remove a student" << std::endl;
-    std::cout << "3. Add a professor" << std::endl;
-    std::cout << "4. Remove a professor" << std::endl;
-    std::cout << "5. Add a course" << std::endl;
-    std::cout << "6. Remove a course" << std::endl;
-    std::cout << "7. Enroll a student in a course" << std::endl;
-    std::cout << "8. Drop a student from a course" << std::endl;
-    std::cout << "9. Assign a professor to a course" << std::endl;
-    std::cout << "10. Remove a professor from a course" << std::endl;
-    std::cout << "11. Display all students" << std::endl;
-    std::cout << "12. Display all professors" << std::endl;
-    std::cout << "13. Display all courses" << std::endl;
-    std::cout << "14. Display student details" << std::endl;
-    std::cout << "15. Display professor details" << std::endl;
-    std::cout << "16. Quit" << std::endl;
+    int choice;
+    cout << "\nUniversity Management System" << endl;
+    cout << "1. Add a student" << endl;
+    cout << "2. Remove a student" << endl;
+    cout << "3. Add a professor" << endl;
+    cout << "4. Remove a professor" << endl;
+    cout << "5. Add a course" << endl;
+    cout << "6. Remove a course" << endl;
+    cout << "7. Enroll a student in a course" << endl;
+    cout << "8. Drop a student from a course" << endl;
+    cout << "9. Assign a professor to a course" << endl;
+    cout << "10. Remove a professor from a course" << endl;
+    cout << "11. Display all students" << endl;
+    cout << "12. Display all professors" << endl;
+    cout << "13. Display all courses" << endl;
+    cout << "14. Display student details" << endl;
+    cout << "15. Display professor details" << endl;
+    cout << "16. Quit\n" << endl;
+    cout << "Enter a number from 1 to 16: ";
+    cin >> choice;
+    return choice;
 }
 
-std::vector<std::string> getLinesFromFile(std::string fileName)
+vector<string> getLinesFromFile(string fileName)
 {
-    std::vector<std::string> lines;
-    std::ifstream file(fileName);
-    std::string line;
+    vector<string> lines;
+    ifstream file(fileName);
+    string line;
 
     if (file.is_open()) {
         while (getline(file, line)) {
@@ -46,115 +53,205 @@ std::vector<std::string> getLinesFromFile(std::string fileName)
         }
         file.close();
     } else {
-        std::cout << "Unable to open file: " << fileName << std::endl;
+        cout << "Unable to open file: " << fileName << endl;
     }
 
     return lines;
 }
 
-Course *getCoursesFromFile(std::string fileName)
-//this gathers the files needed to run the program
+vector<string> splitString(const string &str, char delimiter)
 {
-    std::vector<std::string> lines = getLinesFromFile(fileName);
-    Course *courses = nullptr;
-    int id = 0;
-
-    for (auto line : lines) {
-        std::stringstream ss{line};
-        std::string name;
-        std::string capacity;
-        ss >> name;
-        ss >> capacity;
-
-        Course *newCourse = new Course(id, name, stoi(capacity));
-
-        if (courses == nullptr) {
-            courses = newCourse;
-            courses->setHead(courses);
-        } else {
-            if (courses->getTail() == nullptr) {
-                courses->setNext(newCourse);
-                courses->setTail(newCourse);
-            } else {
-                courses->getTail()->setNext(newCourse);
-                courses->setTail(newCourse);
-            }
-        }
-        id++;
+    vector<string> splitLine;
+    istringstream iss(str);
+    string token;
+    while (getline(iss, token, delimiter)) {
+        splitLine.push_back(token);
     }
-
-    return courses;
+    return splitLine;
 }
 
-Student *getStudentsFromFile(std::string fileName)
+LinkedList *getCoursesFromFile(string fileName)
 {
-    std::vector<std::string> lines = getLinesFromFile(fileName);
-    Student *students = nullptr;
-    int id = 0;
+    vector<string> lines = getLinesFromFile(fileName);
+    LinkedList *list = new LinkedList();
 
-    for (auto line : lines) {
-        Student *newStudent = new Student(id, line);
-
-        if (students == nullptr) {
-            students = newStudent;
-            students->setHead(students);
-        } else {
-            if (students->getTail() == nullptr) {
-                newStudent->setPrev(students);
-                students->setNext(newStudent);
-                students->setTail(newStudent);
-            } else {
-                students->getTail()->setNext(newStudent);
-                newStudent->setPrev(students->getTail());
-                students->setTail(newStudent);
-            }
+    for (const auto &line : lines) {
+        vector<string> splitLine = splitString(line, ';');
+        if (splitLine.size() != 3) {
+            cout << "Invalid format: " << fileName << endl;
+            exit(84);
         }
-        id++;
+        Course *c = new Course(list->getSize() + 1, splitLine[0], stoi(splitLine[1]), splitLine[2]);
+        list->push_back(c, c->getId());
     }
-
-    return students;
+    return list;
 }
 
-Professor *getProfessorsFromFile(std::string fileName)
+LinkedList *getStudentsFromFile(string fileName)
 {
-    std::vector<std::string> lines = getLinesFromFile(fileName);
-    Professor *professors = nullptr;
-    int id = 0;
+    vector<string> lines = getLinesFromFile(fileName);
+    LinkedList *list = new LinkedList();
 
-    for (auto line : lines) {
-        Professor *newProfessor = new Professor(id, line);
-
-        if (professors == nullptr) {
-            professors = newProfessor;
-            professors->setHead(professors);
-        } else {
-            if (professors->getTail() == nullptr) {
-                newProfessor->setPrev(professors);
-                professors->setNext(newProfessor);
-                professors->setTail(newProfessor);
-            } else {
-                professors->getTail()->setNext(newProfessor);
-                newProfessor->setPrev(professors->getTail());
-                professors->setTail(newProfessor);
-            }
+    for (const auto &line : lines) {
+        vector<string> splitLine = splitString(line, ';');
+        if (splitLine.size() != 1) {
+            cout << "Invalid format: " << fileName << endl;
+            exit(84);
         }
-        id++;
+        Student *s = new Student(list->getSize() + 1, splitLine[0]);
+        list->push_back(s, s->getId());
     }
+    return list;
+}
 
-    return professors;
+LinkedList *getProfessorsFromFile(string fileName)
+{
+    vector<string> lines = getLinesFromFile(fileName);
+    LinkedList *list = new LinkedList();
+
+    for (const auto &line : lines) {
+        vector<string> splitLine = splitString(line, ';');
+        if (splitLine.size() != 1) {
+            cout << "Invalid format: " << fileName << endl;
+            exit(84);
+        }
+        Professor *p = new Professor(list->getSize() + 1, splitLine[0]);
+        list->push_back(p, p->getId());
+    }
+    return list;
+}
+
+void displayCourseStudent(Course *course) {
+    Node *current = course->getStudents()->getHead();
+    while (current) {
+        cout << current->getID() << ": " << static_cast<Student*>(current->getData())->getName() << '\n';
+        current = current->getNext();
+    }
+}
+
+void displayDetailsCourses(Course *course) {
+    cout << course->getName() << '\n';
+    cout << course->getDescription() << ' ';
+    cout << "Capacity: " << ((course->getStudents() == nullptr) ? 0 : course->getStudents()->getSize()) << "/" << course->getCapacity() << '\n';
+    displayCourseStudent(course);
+}
+
+void displayListDetailsCourses(LinkedList *&courses) {
+    Node *current = courses->getHead();
+    while (current) {
+        Course *course = static_cast<Course*>(current->getData());
+        cout << current->getID() << ": " << course->getName() << '\n';
+        cout << course->getDescription() << ' ';
+        cout << "Capacity: " << ((course->getStudents() == nullptr) ? 0 : course->getStudents()->getSize()) << "/" << course->getCapacity() << '\n';
+        displayCourseStudent(course);
+        current = current->getNext();
+    }
+    cout << endl;
+}
+
+void displayListCourses(LinkedList *&courses) {
+    Node *current = courses->getHead();
+    while (current) {
+        Course *course = static_cast<Course*>(current->getData());
+        cout << current->getID() << ": " << course->getName() << '\n';
+        cout << "Capacity: " << ((course->getStudents() == nullptr) ? 0 : course->getStudents()->getSize()) << "/" << course->getCapacity() << '\n';
+        current = current->getNext();
+    }
+    cout << endl;
+}
+
+void displayStudents(LinkedList *&students) {
+    Node *current = students->getHead();
+    while (current) {
+        cout << current->getID() << ": " << static_cast<Student*>(current->getData())->getName() << '\n';
+        current = current->getNext();
+    }
+    cout << endl;
+}
+
+Student *displayAndGetStudent(LinkedList *&students) {
+    int studentId = 0;
+    cout << endl;
+    displayStudents(students);
+    cout << "Student to add: ";
+    cin >> studentId;
+    Node *node = students->find_by_id(studentId);
+    if (node == NULL) {
+        cout << "Student not found";
+        return displayAndGetStudent(students);
+    }
+    return static_cast<Student *>(node->getData());
+}
+
+Course *displayAndGetCourse(LinkedList *&courses) {
+    int courseId = 0;
+    cout << endl;
+    displayListCourses(courses);
+    cout << "Course to add the student: ";
+    cin >> courseId;
+    Node *node = courses->find_by_id(courseId);
+
+    if (node == NULL) {
+        cout << "Course not found";
+        return displayAndGetCourse(courses);
+    }
+    return static_cast<Course *>(node->getData());
+}
+
+void addStudent(LinkedList *&courses, LinkedList *&students) {
+    Student* student = displayAndGetStudent(students);
+
+    while(1) {
+        try {
+            Course* course = displayAndGetCourse(courses);
+            course->addStudents(student);
+            cout << "Student added successfully\n";
+            displayDetailsCourses(course);
+            break;
+        } catch (const std::exception& e) {
+            cout << e.what() << std::endl;
+        }
+    }
+    cout << "-----------------------------\n";
 }
 
 int main()
 {
-    Course *courses = getCoursesFromFile(COURSES_FILE);
-    Student *students = getStudentsFromFile(STUDENTS_FILE);
-    Professor *professors = getProfessorsFromFile(PROFESSORS_FILE);
+    LinkedList *courses = getCoursesFromFile(COURSES_FILE);
+    LinkedList *students = getStudentsFromFile(STUDENTS_FILE);
+    LinkedList *professors = getProfessorsFromFile(PROFESSORS_FILE);
 
     if (!courses || !students || !professors) {
-        std::cout << "Error: Unable to load files" << std::endl;
+        cout << "Error: Unable to load files" << endl;
         return 84;
     }
-
-    courses->displayCourses();
+    int choice = displayMenu();
+    while (choice != 16) {
+        switch (choice) {
+            case 1:
+                addStudent(courses, students);
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+            case 4:
+                break;
+            case 5:
+                break;
+            case 6:
+                break;
+            case 7:
+                cout << "Coming soon!" << endl;
+                break;
+            case 8:
+                cout << "Coming soon!" << endl;
+                break;
+            default:
+                cout << "Error! Input must be a number between 1 and 16" << endl;
+                break;
+        }
+        choice = displayMenu();
+    }
     return 0;
 }

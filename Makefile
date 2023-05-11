@@ -11,13 +11,7 @@ LD			=	clang++
 
 NAME		=	finalProject
 
-MAIN		=	src/main.cpp
-
-SRC			=	src/Course.cpp		\
-				src/Person.cpp		\
-				src/Professor.cpp	\
-				src/Student.cpp		\
-
+SRC 		= 	$(shell find src -name '*.cpp')
 
 OBJ		=	$(SRC:.cpp=.o)  $(MAIN:.cpp=.o)
 
