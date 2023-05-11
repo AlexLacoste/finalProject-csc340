@@ -478,7 +478,7 @@ int main()
         return 84;
     }
     int choice = displayMenu();
-    while (choice != 16) {
+    while (choice != 14) {
         switch (choice) {
             case 1:
                 createStudent(students);
