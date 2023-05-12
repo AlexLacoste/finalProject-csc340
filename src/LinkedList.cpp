@@ -1,16 +1,21 @@
 #include "LinkedList.hpp"
 
-LinkedList::LinkedList() : head(nullptr) {}
+LinkedList::LinkedList() : head(nullptr)
+{
+}
 
-void LinkedList::setHead(Node *head) {
+void LinkedList::setHead(Node *head)
+{
     this->head = head;
 }
 
-Node *LinkedList::getHead() {
+Node *LinkedList::getHead()
+{
     return head;
 }
 
-void LinkedList::push_back(void *data, int id) {
+void LinkedList::push_back(void *data, int id)
+{
     if (!head) {
         head = new Node(id, data);
     } else {
@@ -22,7 +27,8 @@ void LinkedList::push_back(void *data, int id) {
     }
 }
 
-void LinkedList::remove(int ID) {
+void LinkedList::remove(int ID)
+{
     Node *current = head;
     Node *prev = nullptr;
     while (current) {
@@ -40,7 +46,8 @@ void LinkedList::remove(int ID) {
     }
 }
 
-Node *LinkedList::find_by_id(int ID) {
+Node *LinkedList::findByID(int ID)
+{
     Node *current = head;
     while (current) {
         if (current->getID() == ID) {
@@ -51,7 +58,8 @@ Node *LinkedList::find_by_id(int ID) {
     return nullptr;
 }
 
-int LinkedList::getSize() {
+int LinkedList::getSize()
+{
     int count = 0;
     Node *current = head;
     while (current) {

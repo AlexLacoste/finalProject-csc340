@@ -4,10 +4,7 @@
 #include <iostream>
 #include <string>
 
-enum PersonType {
-    STUDENT,
-    PROFESSOR
-};
+enum PersonType { STUDENT, PROFESSOR };
 
 class Person {
   public:
@@ -19,7 +16,7 @@ class Person {
     void setName(const std::string &name);
     void setId(int id);
 
-    virtual PersonType getPersonType() const = 0;  // pure virtual function
+    virtual PersonType getPersonType() const = 0; // pure virtual function
 
   protected:
     std::string name;

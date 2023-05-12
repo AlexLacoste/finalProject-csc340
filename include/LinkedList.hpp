@@ -1,8 +1,8 @@
 #ifndef LINKED_LIST_HPP_
 #define LINKED_LIST_HPP_
 
-#include <string>
 #include <Node.hpp>
+#include <string>
 
 class LinkedList {
   public:
@@ -16,7 +16,7 @@ class LinkedList {
     void remove(int ID);
     void push_back(void *data, int id);
     int getSize();
-    Node *find_by_id(int ID);
+    Node *findByID(int ID);
 
   private:
     Node *head;

@@ -1,14 +1,14 @@
 #ifndef COURSE_HPP_
 #define COURSE_HPP_
 
-#include <string>
 #include <LinkedList.hpp>
 #include <Professor.hpp>
 #include <Student.hpp>
+#include <string>
 
 class Course {
   public:
-    Course(int id,const std::string &name, int capacity, const std::string &description);
+    Course(int id, const std::string &name, int capacity, const std::string &description);
     ~Course() noexcept = default;
 
     const std::string &getName() const;

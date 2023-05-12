@@ -8,7 +8,10 @@ class Professor : public Person {
     Professor(int id, const std::string &name);
     ~Professor() noexcept = default;
 
-    PersonType getPersonType() const override { return PROFESSOR; }
+    PersonType getPersonType() const override
+    {
+        return PROFESSOR;
+    }
 };
 
 #endif

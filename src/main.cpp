@@ -12,9 +12,9 @@ using namespace std;
 #define PROFESSORS_FILE "school-files/professors.txt"
 #define COURSES_FILE    "school-files/courses.txt"
 
-#define STUDENTS_FINISHED_FILE   "../school-files/students-finished.txt"
-#define PROFESSORS_FINISHED_FILE "../school-files/professors-finished.txt"
-#define COURSES_FINISHED_FILE    "../school-files/courses-finished.txt"
+#define STUDENTS_FINISHED_FILE   "school-files/students-finished.txt"
+#define PROFESSORS_FINISHED_FILE "school-files/professors-finished.txt"
+#define COURSES_FINISHED_FILE    "school-files/courses-finished.txt"
 
 vector<string> getLinesFromFile(string fileName)
 {
@@ -152,7 +152,7 @@ Student *displayAndGetStudent(LinkedList *students)
     displayPerson(students);
     cout << "Student to select: ";
     cin >> studentId;
-    Node *node = students->find_by_id(studentId);
+    Node *node = students->findByID(studentId);
     if (node == NULL) {
         cout << "Student not found";
         return displayAndGetStudent(students);
@@ -170,7 +170,7 @@ Course *displayAndGetCourse(LinkedList *courses)
     displayListCourses(courses);
     cout << "Course to select: ";
     cin >> courseId;
-    Node *node = courses->find_by_id(courseId);
+    Node *node = courses->findByID(courseId);
 
     if (node == NULL) {
         cout << "Course not found";
@@ -186,7 +186,7 @@ Professor *displayAndGetProfessor(LinkedList *professors)
     displayPerson(professors);
     cout << "Professor to select: ";
     cin >> studentId;
-    Node *node = professors->find_by_id(studentId);
+    Node *node = professors->findByID(studentId);
     if (node == NULL) {
         cout << "Professor not found";
         return displayAndGetProfessor(professors);
@@ -394,7 +394,7 @@ void removeCourse(LinkedList *&courses)
     cout << "-----------------------------\n";
 }
 
-void assignProfessor(LinkedList *&courses,LinkedList *&professors)
+void assignProfessor(LinkedList *&courses, LinkedList *&professors)
 {
     Course *course = nullptr;
     try {
@@ -423,7 +423,6 @@ void assignProfessor(LinkedList *&courses,LinkedList *&professors)
 
 void deleteProfessorFromCourse(LinkedList *&courses)
 {
-
     Course *course = nullptr;
     try {
         course = displayAndGetCourse(getCoursesNoEmpty(courses));
@@ -462,9 +461,51 @@ int displayMenu()
     cout << "12. Display all professors" << endl;
     cout << "13. Display all courses" << endl;
     cout << "14. Quit\n" << endl;
-    cout << "Enter a number from 1 to 16: ";
+    cout << "Enter a number from 1 to 14: ";
     cin >> choice;
     return choice;
+}
+
+void saveCoursesToFile(LinkedList *&courses, std::string filename)
+{
+    std::ofstream file(filename);
+
+    if (!file.is_open()) {
+        cout << "Error: Unable to open file" << endl;
+        return;
+    }
+    for (Node *current = courses->getHead(); current; current = current->getNext()) {
+        Course *course = static_cast<Course *>(current->getData());
+        file << course->getName() << ";" << course->getCapacity() << ";" << course->getDescription() << std::endl;
+    }
+}
+
+void saveStudentsToFile(LinkedList *&students, std::string filename)
+{
+    std::ofstream file(filename);
+
+    if (!file.is_open()) {
+        cout << "Error: Unable to open file" << endl;
+        return;
+    }
+    for (Node *current = students->getHead(); current; current = current->getNext()) {
+        Student *student = static_cast<Student *>(current->getData());
+        file << student->getName() << std::endl;
+    }
+}
+
+void saveProfessorsToFile(LinkedList *&professors, std::string filename)
+{
+    std::ofstream file(filename);
+
+    if (!file.is_open()) {
+        cout << "Error: Unable to open file" << endl;
+        return;
+    }
+    for (Node *current = professors->getHead(); current; current = current->getNext()) {
+        Professor *professor = static_cast<Professor *>(current->getData());
+        file << professor->getName() << std::endl;
+    }
 }
 
 int main()
@@ -525,5 +566,10 @@ int main()
         }
         choice = displayMenu();
     }
+
+    saveCoursesToFile(courses, COURSES_FINISHED_FILE);
+    saveStudentsToFile(students, STUDENTS_FINISHED_FILE);
+    saveProfessorsToFile(professors, PROFESSORS_FINISHED_FILE);
+
     return 0;
 }
