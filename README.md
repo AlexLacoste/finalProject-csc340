@@ -57,12 +57,39 @@ Clone the repository and run the following command in the root directory:
 ```bash
 make
 ./finalProject
+and follow the instructions on the menu
 ```
+
+The program will read files from the shool-files directory courses.txt, professors.txt, students.txt and save files to the same directory into courses-finished.txt, professors-finished.txt, students-finished.txt.
 
 and to clean the directory:
 
 ```bash
 make fclean
+```
+
+<br/>
+
+## Format
+
+<br/>
+
+We use the file .clang-format to format our code. To format the code, run the following command in the root directory:
+
+```bash
+make format
+```
+
+Install clang-format if you don't have it:
+
+For macOS:
+```bash
+brew install clang-format
+```
+
+For Linux:
+```bash
+sudo apt install clang-format
 ```
 
 <br/>

@@ -29,4 +29,7 @@ fclean:		clean
 
 re:	fclean all
 
-.PHONY: all clean fclean re
+format:
+	clang-format -i $(SRC) $(MAIN)
+
+.PHONY: all clean fclean re format
